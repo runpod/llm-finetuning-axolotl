@@ -15,7 +15,7 @@ on:
 
 jobs:
   docker-build:
-    runs-on: ubuntu-latest-m
+    runs-on: ubuntu-latest-public-m
 
     steps:
       - name: Clear Space
