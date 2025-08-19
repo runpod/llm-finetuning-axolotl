@@ -1,0 +1,6 @@
+runpod~=1.7.0
+
+# vLLM for inference serving
+# The base image already has flash-attn from axolotl installation
+# vLLM will use the existing flash-attn if it's compatible
+vllm

@@ -1,0 +1,17 @@
+────────────────────────────────────
+🚀 WELCOME TO RUNPOD FINE-TUNING! 🤖 
+────────────────────────────────────
+
+You've successfully configured your training environment! 🎉
+
+💡 Next Steps: /workspace/fine-tuning/
+1️⃣  Familiarize yourself with the examples/ and outputs/ directories.
+2️⃣  Carefully review your config.yaml settings, verifying both format and values. As a best practice, ensure that all hyperparameters are tuned according to your specific use case to prevent potential errors.
+3️⃣  Start fine-tuning when you're ready with `axolotl train config.yaml`
+4️⃣  After training, serve your model with `./start_vllm.sh ./outputs/your-model`
+
+────────────────────────────────────
+✨ POWERED BY AXOLOTL 🦎 + vLLM 🚀
+────────────────────────────────────
+📄 Axolotl Docs: https://axolotl-ai-cloud.github.io/axolotl/docs/config.html
+🌐 vLLM Server: http://localhost:8000 (after starting) 

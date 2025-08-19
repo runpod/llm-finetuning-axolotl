@@ -1,0 +1,35 @@
+# vLLM Configuration Example
+# Copy this file and customize for your model
+
+# Model configuration
+model: ./outputs/my-model # Path to your trained model
+# model: google/gemma-3-27b-it  # Or HuggingFace model ID
+
+# Context and sequence settings
+max_model_len: 32768
+block_size: 32
+max_num_seqs: 1
+max_num_batched_tokens: 8192
+
+# Memory and performance
+gpu_memory_utilization: 0.95
+swap_space: 16
+enable_chunked_prefill: true
+disable_custom_all_reduce: true
+
+# Server settings
+port: 8000
+host: 0.0.0.0
+served_model_name: my-model # Name shown in API
+
+# Logging
+disable_log_requests: false
+disable_log_stats: false
+
+# Tool usage (for compatible models)
+enable_auto_tool_choice: false
+tool_call_parser: pythonic
+# LoRA configuration (uncomment if using LoRA)
+# lora_modules:
+#   - name: lora_adapter
+#     path: ./outputs/lora-out
