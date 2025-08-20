@@ -10,6 +10,14 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 RUN rm -rf /root/.cache/pip
 
+# Install uv for faster package management
+RUN pip install uv
+
+# Create separate venv for vLLM using uv to avoid flash-attn conflicts with Axolotl
+# Match CUDA version with base image (CUDA 12.6)
+RUN uv venv /opt/vllm-venv && \
+    uv pip install --python /opt/vllm-venv/bin/python vllm --torch-backend=cu126
+
 # Expose vLLM port (not started automatically)
 EXPOSE 8000
 

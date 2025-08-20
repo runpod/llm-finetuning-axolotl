@@ -1,0 +1,56 @@
+services:
+  llm-finetuning:
+    image: runpod/llm-finetuning-axolotl:dev
+    platform: linux/amd64
+
+    # GPU access
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+    # Port mapping for vLLM
+    ports:
+      - "8000:8000" # vLLM API server
+      - "8888:8888" # Jupyter Lab (from base image)
+      - "2222:22" # SSH access (from base image)
+
+    # Environment variables for training configuration
+    environment:
+      # Required credentials
+      - HF_TOKEN=${HF_TOKEN}
+      # - WANDB_API_KEY=${WANDB_API_KEY}
+
+      # Training configuration (examples - customize as needed)
+      - AXOLOTL_BASE_MODEL=TinyLlama/TinyLlama_v1.1
+      - AXOLOTL_DATASETS=[{"path":"mhenrichsen/alpaca_2k_test","type":"alpaca"}]
+      - AXOLOTL_OUTPUT_DIR=./outputs/my_training
+      - AXOLOTL_ADAPTER=lora
+      - AXOLOTL_LORA_R=8
+      - AXOLOTL_LORA_ALPHA=16
+      - AXOLOTL_NUM_EPOCHS=1
+      - AXOLOTL_MICRO_BATCH_SIZE=2
+      - AXOLOTL_GRADIENT_ACCUMULATION_STEPS=1
+      - AXOLOTL_LEARNING_RATE=0.0002
+      - AXOLOTL_LOAD_IN_8BIT=true
+
+      # Optional: Disable Jupyter if not needed
+      # - JUPYTER_DISABLE=1
+
+      # Optional: SSH key for access
+      # - PUBLIC_KEY=${PUBLIC_KEY}
+
+    # Volume mounts for persistent data
+    volumes:
+      - ./outputs:/workspace/data/axolotl-artifacts
+      - ./configs:/workspace/fine-tuning/configs
+
+    # Keep container running
+    tty: true
+    stdin_open: true
+
+    # Optional: Override command for debugging
+    # command: ["sleep", "infinity"]

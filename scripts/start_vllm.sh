@@ -80,8 +80,8 @@ except:
     echo "🔧 Additional args: $*"
     echo ""
     
-    # Start vLLM with config file
-    python -m vllm.entrypoints.openai.api_server \
+    # Start vLLM with config file (using dedicated venv)
+    /opt/vllm-venv/bin/python -m vllm.entrypoints.openai.api_server \
         --config "$INPUT" \
         "$@"
         
@@ -95,8 +95,8 @@ else
     echo "🌐 Server will be available at: http://0.0.0.0:8000"
     echo ""
     
-    # Start vLLM with the provided model and any additional arguments
-    python -m vllm.entrypoints.openai.api_server \
+    # Start vLLM with the provided model and any additional arguments (using dedicated venv)
+    /opt/vllm-venv/bin/python -m vllm.entrypoints.openai.api_server \
         --model "$MODEL_PATH" \
         --host 0.0.0.0 \
         --port 8000 \

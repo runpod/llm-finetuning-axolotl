@@ -41,13 +41,10 @@ axolotl train config.yaml
 4. **Optional - Start vLLM server** (after training):
 
 ```bash
-# Option A: Using YAML config (recommended)
-cp vllm_config_example.yaml my_config.yaml
-# Edit my_config.yaml with your model path
-./start_vllm.sh my_config.yaml
-
-# Option B: Command line
-./start_vllm.sh ./outputs/lora-out --lora-modules lora_name=./outputs/lora-out
+# Create your vLLM config based on the example
+cp vllm_config_example.yaml my_vllm_config.yaml
+# Edit my_vllm_config.yaml with your trained model path and settings
+./start_vllm.sh my_vllm_config.yaml
 ```
 
 ## 🏗️ Local Development
@@ -150,28 +147,12 @@ After training, you can serve your model using the built-in vLLM server:
 
 ### Quick Start vLLM
 
-#### Option A: Using YAML Config (Recommended)
-
 ```bash
 # 1. Copy and customize the example config
 cp vllm_config_example.yaml my_vllm_config.yaml
-# Edit my_vllm_config.yaml with your model path and settings
-
-# 2. Start vLLM with config
+# 2. Edit my_vllm_config.yaml with your trained model path and settings
+# 3. Start vLLM with your config
 ./start_vllm.sh my_vllm_config.yaml
-```
-
-#### Option B: Command Line Arguments
-
-```bash
-# For LoRA models
-./start_vllm.sh ./outputs/lora-out --lora-modules lora_name=./outputs/lora-out
-
-# For merged/full fine-tuned models
-./start_vllm.sh ./outputs/merged-model
-
-# With custom settings
-./start_vllm.sh ./outputs/my-model --max-model-len 4096 --gpu-memory-utilization 0.8
 ```
 
 ### vLLM Features
