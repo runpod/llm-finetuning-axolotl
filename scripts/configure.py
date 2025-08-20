@@ -3,7 +3,9 @@ from typing import Any, Optional
 import os
 import json
 import yaml
-from axolotl.utils.config.models.input.v0_4_1 import AxolotlInputConfig
+
+# Note: AxolotlInputConfig is no longer available in current Axolotl versions
+# We'll do simple YAML processing instead
 
 """
 Example:
@@ -45,45 +47,43 @@ def get_env_override(key: str, prefix: str = "") -> Optional[Any]:
 
 def load_config_with_overrides(
     config_path: str, env_prefix: str = DEFAULT_PREFIX
-) -> AxolotlInputConfig:
+) -> dict:
     """
     Load and parse the YAML config file, applying any environment variable overrides.
-    Uses the Pydantic AxolotlInputConfig for validation and parsing.
+    Simple version without Pydantic validation.
 
     Args:
         config_path: Path to the YAML config file
         env_prefix: Prefix for environment variables to override config values
 
     Returns:
-        AxolotlInputConfig object with merged configuration
+        dict with merged configuration
     """
     # Load base config from YAML
     if not config_path.startswith("/"):
-        # absolute path
         config_path = os.path.join(os.path.dirname(__file__), config_path)
 
     with open(config_path, "r") as f:
         print(f"🛠️ Generating from template: {config_path}")
         config_dict = yaml.safe_load(f)
 
-    # Get all fields from the Pydantic model
-    model_fields = AxolotlInputConfig.model_fields
+    # Apply environment overrides for any AXOLOTL_ prefixed variables
+    for env_key, env_value in os.environ.items():
+        if env_key.startswith(env_prefix):
+            # Convert AXOLOTL_BASE_MODEL to base_model
+            config_key = env_key[len(env_prefix) :].lower()
+            config_dict[config_key] = parse_env_value(env_value)
+            print(f"  Override: {config_key} = {config_dict[config_key]}")
 
-    # Apply environment overrides
-    for field_name in model_fields:
-        if env_value := get_env_override(field_name, env_prefix):
-            config_dict[field_name] = env_value
-
-    # Create and validate the config
-    return AxolotlInputConfig.model_validate(config_dict)
+    return config_dict
 
 
-def save_config(config: AxolotlInputConfig, output_path: str) -> None:
+def save_config(config: dict, output_path: str) -> None:
     """
     Save the configuration to a YAML file.
     """
-    # Convert to dict and remove null values
-    config_dict = config.model_dump(mode="json", exclude_none=True)
+    # Remove null values
+    config_dict = {k: v for k, v in config.items() if v is not None}
 
     if not output_path.startswith("/"):
         # absolute path
