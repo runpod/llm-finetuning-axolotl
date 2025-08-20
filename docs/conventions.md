@@ -314,6 +314,34 @@ export AXOLOTL_GRADIENT_ACCUMULATION_STEPS="16"
 
 ## 🔧 Troubleshooting
 
+### Critical RunPod Issue
+
+#### ⚠️ **NEVER Mount Volumes to `/workspace`**
+
+```bash
+# ❌ WRONG - This will overwrite the entire Docker image structure
+volumes:
+  - ./data:/workspace
+
+# ✅ CORRECT - Mount to subdirectories only
+volumes:
+  - ./data:/workspace/data/axolotl-artifacts
+```
+
+**Why**: RunPod volume mounts to `/workspace` will completely overwrite:
+
+- `/workspace/axolotl/` (Axolotl installation)
+- `/workspace/fine-tuning/` (Your scripts)
+- All symlinks and directory structure
+
+**Symptoms**:
+
+- `ln: failed to create symbolic link '/workspace/axolotl/outputs': No such file or directory`
+- `/root/cloud-entrypoint.sh: line 93: /workspace/fine-tuning/autorun.sh: No such file or directory`
+- Infinite restart loop
+
+**Solution**: Always mount to `/workspace/data/` or other subdirectories, never `/workspace` directly.
+
 ### Common Issues
 
 #### 1. **Environment Variables Not Applied**

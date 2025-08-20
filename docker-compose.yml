@@ -18,11 +18,12 @@ services:
       - "8888:8888" # Jupyter Lab (from base image)
       - "2222:22" # SSH access (from base image)
 
-    # Environment variables for training configuration
+
+        # Environment variables for training configuration
     environment:
       # Required credentials
       - HF_TOKEN=${HF_TOKEN}
-      # - WANDB_API_KEY=${WANDB_API_KEY}
+      - WANDB_API_KEY=${WANDB_API_KEY}
 
       # Training configuration (examples - customize as needed)
       - AXOLOTL_BASE_MODEL=TinyLlama/TinyLlama_v1.1
@@ -44,6 +45,7 @@ services:
       # - PUBLIC_KEY=${PUBLIC_KEY}
 
     # Volume mounts for persistent data
+    # IMPORTANT: Mount to /workspace/data, NOT /workspace (which overwrites everything!)
     volumes:
       - ./outputs:/workspace/data/axolotl-artifacts
       - ./configs:/workspace/fine-tuning/configs
