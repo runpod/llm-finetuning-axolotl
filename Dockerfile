@@ -2,21 +2,29 @@ FROM axolotlai/axolotl-cloud:main-latest
 
 WORKDIR /workspace/fine-tuning
 
-COPY requirements.txt .
-
-RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install --upgrade pip && \
-    pip install -r requirements.txt
-
-RUN rm -rf /root/.cache/pip
-
 # Install uv for faster package management
 RUN pip install uv
 
+COPY requirements.txt .
+
+# Install main requirements with uv
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv pip install --system -r requirements.txt
+
 # Create separate venv for vLLM using uv to avoid flash-attn conflicts with Axolotl
-# Match CUDA version with base image (CUDA 12.6)
-RUN uv venv /opt/vllm-venv && \
-    uv pip install --python /opt/vllm-venv/bin/python vllm --torch-backend=cu126
+RUN uv venv /opt/vllm-venv
+
+# Install PyTorch 2.6.x with CUDA 12.6 to match flashinfer wheel availability
+RUN uv pip install --python /opt/vllm-venv/bin/python "torch>=2.6.0,<2.7.0" --index-url https://download.pytorch.org/whl/cu126
+
+# Install vLLM (will use existing PyTorch)
+RUN uv pip install --python /opt/vllm-venv/bin/python vllm
+
+# Install flashinfer for better performance (no-deps to avoid torch conflict)
+RUN uv pip install --python /opt/vllm-venv/bin/python flashinfer-python --index-url https://flashinfer.ai/whl/cu126/torch2.6 --no-deps
+
+# Install hf-transfer for faster downloads
+RUN uv pip install --python /opt/vllm-venv/bin/python hf-transfer
 
 # Expose vLLM port (not started automatically)
 EXPOSE 8000
